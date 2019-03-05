@@ -5,7 +5,9 @@
 
 using namespace std;
 
+//*******************************************************************************************
 // Command structure
+//*******************************************************************************************
 typedef struct command_tag
 {
     int index;
@@ -13,21 +15,25 @@ typedef struct command_tag
     void (*command_fn)();
 }command_t;
 
-
-// Central Command Control
+//*******************************************************************************************
+// Central Command Control class
+//*******************************************************************************************
 class CommandControl
 {
 private:
-    int m_totalCommands;                                    // Total registered commands in the system
-    unordered_map<string, command_t> m_commandMap;          // Map of  commandName and command_t
+    bool m_initialized;
+    int m_totalCommands;                                               // Total registered commands in the system
+    unordered_map<string, command_t> m_commandMap;                     // Map of  commandName and command_t
 
-    CommandControl() {};                                    // We are going to use GetInstance to create object
+    CommandControl();                                               // We are going to use GetInstance to create object
 
 public:
-    CommandControl(CommandControl const &) = delete;        // Don't implement
-    void operator=(CommandControl const&) = delete;         // Don't implement
+    CommandControl(CommandControl const &) = delete;                   // Don't implement
+    void operator=(CommandControl const&) = delete;                    // Don't implement
     ~CommandControl();
     static CommandControl& GetInstance();
+    void initializeCommandControl();
+    void displayRegisteredCommands();
     int registerCommand(const string & commandName, void(*fn)());
     int validateCommand(const string &  commandName);
     bool doCommand(const string & commandName);
