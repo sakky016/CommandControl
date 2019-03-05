@@ -16,6 +16,20 @@ void displayRegisteredCommandsExt()
 }
 
 //******************************************************************************************
+// @name                    : showCommandHistoryExt
+//
+// @description             : Displays the list of previously executed commands. This is just a wrapper
+//                            function which calls showCommandHistory() of the 
+//                            CommandControl class
+//
+// @returns                 : Nothing
+//********************************************************************************************
+void showCommandHistoryExt()
+{
+    CommandControl::GetInstance().showCommandHistory();
+}
+
+//******************************************************************************************
 // @name                    : CommandControl
 //
 // @description             : Private constructor. Object to be created only via GetInstance()
@@ -65,6 +79,8 @@ CommandControl& CommandControl::GetInstance()
 void CommandControl::initializeCommandControl()
 {
     this->registerCommand("show", &displayRegisteredCommandsExt);
+    this->registerCommand("history", &showCommandHistoryExt);
+    
 }
 
 //******************************************************************************************
@@ -161,6 +177,10 @@ void CommandControl::startCommandControl()
             continue;
         }
 
+        //Store this commandName to history
+        this->addTohistory(commandName);
+
+        // Validate the command
         commandIndex = this->validateCommand(commandName);
         if (commandIndex == -1)
         {
@@ -168,6 +188,7 @@ void CommandControl::startCommandControl()
             continue;
         }
 
+        // Execute the command
         retval = this->doCommand(commandName);
 
     }// End of command line processing
@@ -197,7 +218,43 @@ bool CommandControl::doCommand(const string & commandName)
     if (commandName == "help")
     {
         printf("show                                : Display list of registered commands\n");
+        printf("history                             : Display list of previously executed commands\n");
     }
 
     return true;
+}
+
+//******************************************************************************************
+// @name                    : addTohistory
+//
+// @description             : Adds this command name string to history
+//
+// @param commandName       : Command name string
+//
+// @returns                 : Nothing
+//********************************************************************************************
+void CommandControl::addTohistory(const string & commandName)
+{
+    if (m_commandHistoryList.size() == HISTORY_MAX)
+    {
+        m_commandHistoryList.pop_front();
+    }
+    
+    m_commandHistoryList.push_back(commandName);
+
+}
+
+//******************************************************************************************
+// @name                    : showCommandHistory
+//
+// @description             : Displays the list of previously executed commands.
+//
+// @returns                 : Nothing
+//********************************************************************************************
+void CommandControl::showCommandHistory()
+{
+    for (auto it = m_commandHistoryList.begin(); it != m_commandHistoryList.end(); it++)
+    {
+        printf("%s\n", (*it).c_str());
+    }
 }
